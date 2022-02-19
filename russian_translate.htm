@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html style="font-size: 16px;" class="u-responsive-xl">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Translate</title>
+    <link rel="stylesheet" href="./russian_chart_files/nicepage.css" media="screen">
+    <script class="u-script" type="text/javascript" src="./russian_chart_files/jquery-1.9.1.min.js.download"
+        defer=""></script>
+    <script class="u-script" type="text/javascript" src="./russian_chart_files/nicepage.js.download" defer=""></script>
+    <style class="u-style">
+        .u-body {
+            background-color: rgb(51, 51, 51);
+            color: white;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto auto auto;
+            grid-auto-flow: row;
+            gap: 10px;
+        }
+
+        #transliteration {
+            width: 100%;
+            padding: 30px 20px;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        #translation {
+            width: 100%;
+            padding: 30px 20px;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        #prompt {
+            font-size: 3em;
+            outline: none;
+        }
+
+        #prompt:focus {
+            outline-width: 0px;
+            outline: none;
+        }
+
+        #submit,
+        #pass,
+        #next {
+            background-color: #565cb4;
+            margin: 0 auto;
+            border-radius: 20px;
+            float: right;
+            width: 80%;
+            outline: none;
+        }
+
+        #submit:hover,
+        #pass:hover,
+        #next:hover {
+            background-color: blue;
+        }
+    </style>
+    <script>
+        russian_cognates = ["метро", "царь", "телефон", "Америка", "аеропорт", "журналист", "видео", "студент", "центр", "кафе"]
+        english_transliterations = [["metro", "myetro"], ["tsar"], ["telefon", "tyelefon", "tyelyefon"], ["amerika"], ["aeroport", "ayeroport"], ["zhurnalist"], ["video", "vidyeo"], ["studyent", "student"], ["tsenter", "tsyenter", "tsyentyer"], ["kafe", "kafye"]]
+        english_translations = [["metro", "train", "subway"], ["tsar", "emperor"], ["telephone", "phone"], ["america"], ["airport"], ["journalist"], ["video"], ["student"], ["center"], ["cafe"]]
+
+        function check_answers() {
+
+            label = document.getElementById('label');
+            transliteration = document.getElementById('transliteration');
+            translation = document.getElementById('translation');
+            word_index = russian_cognates.indexOf(label.children[0].innerHTML);
+
+            if (english_transliterations[word_index].indexOf(transliteration.value.toLowerCase()) > -1) {
+                transliteration.style.backgroundColor = "green";
+            }
+            else {
+                transliteration.style.backgroundColor = "red";
+            }
+            if (english_translations[word_index].indexOf(translation.value.toLowerCase()) > -1) {
+                translation.style.backgroundColor = "green";
+            }
+            else {
+                translation.style.backgroundColor = "red";
+            }
+
+            document.getElementById('next').style.visibility = "visible";
+            document.getElementById('pass').value = "answers";
+            document.getElementById('submit').style.visibility = "hidden";
+
+            return false;
+        }
+
+        function rus_pass() {
+            transliteration = document.getElementById('transliteration');
+            translation = document.getElementById('translation');
+            word_index = russian_cognates.indexOf(label.children[0].innerHTML);
+            console.log(word_index)
+
+            transliteration.value = english_transliterations[word_index][0];
+            translation.value = english_translations[word_index][0];
+            transliteration.style.backgroundColor = "white";
+            translation.style.backgroundColor = "white";
+
+            document.getElementById('next').style.visibility = "visible";
+            document.getElementById('pass').style.visibility = "hidden";
+            document.getElementById('submit').style.visibility = "hidden";
+        }
+
+        function rus_next() {
+            random_num = Math.floor(Math.random() * (russian_cognates.length - 0) + 0);
+            document.getElementById('label').remove();
+            document.getElementById('container_1').insertAdjacentHTML("afterbegin", "<label for='word' style='margin: 0 auto' id='label'>Russian Word<p>" + russian_cognates[random_num] + "</p></label>");
+            document.getElementById('transliteration').style.backgroundColor = "white";
+            document.getElementById('translation').style.backgroundColor = "white";
+            document.getElementById('transliteration').value = "";
+            document.getElementById('translation').value = "";
+            document.getElementById('next').style.visibility = "hidden";
+            document.getElementById('pass').value = "pass";
+            document.getElementById('pass').style.visibility = "visible";
+            document.getElementById('submit').style.visibility = "visible";
+        }
+
+        function loader() {
+            document.querySelector("#next").addEventListener("keyup", event => {
+                console.log(event.key);
+                if (event.key !== "Enter") return;
+                document.querySelector("#next").click();
+                event.preventDefault();
+            });
+            rus_next();
+        }
+    </script>
+</head>
+
+<body class="u-body" onload="loader()">
+    <section class="u-align-center u-clearfix u-section-2" id="sec-aa59">
+        <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-xl u-sheet-1">
+            <h2 class="u-text u-text-default u-text-1" style="padding-top: 20px;">Transliterate and Translate</h2>
+            <br><br><br>
+            <form id="prompt" onsubmit="return check_answers()">
+                <div class="grid-container" id="container_1">
+                    <label for="word" style="margin: 0 auto" id="label">Russian Word
+                        <p>метро</p>
+                    </label>
+                    <label style="margin: 0 auto">Transliterate
+                        <input type="text" id="transliteration" name="metro" style="color:black; text-align: center;"
+                            autocomplete="off">
+                    </label>
+                    <label style="margin: 0 auto">Translate
+                        <input type="text" id="translation" name="metro" style="color:black; text-align: center;"
+                            autocomplete="off">
+                    </label>
+                    <input type="button" value="pass" id="pass" onclick="rus_pass()">
+                    <input type="button" value="next" id="next" style="visibility: hidden" onclick="rus_next()">
+                    <input type="button" value="submit" id="submit" onclick="check_answers()">
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+
+</html>

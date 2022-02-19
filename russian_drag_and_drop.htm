@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html style="font-size: 16px;" class="u-responsive-xl">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Drag-and-Drop</title>
+    <link rel="stylesheet" href="./russian_chart_files/nicepage.css" media="screen">
+    <script class="u-script" type="text/javascript" src="./russian_chart_files/jquery-1.9.1.min.js.download"
+        defer=""></script>
+    <script class="u-script" type="text/javascript" src="./russian_chart_files/nicepage.js.download" defer=""></script>
+    <style class="u-style">
+        .u-body {
+            background-color: rgb(51, 51, 51);
+            color: white
+        }
+
+        .russian_char {
+
+            display: block;
+            height: 60px;
+            width: 60px;
+            line-height: 60px;
+
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+
+            background-color: grey;
+            color: white;
+            text-align: center;
+            font-size: 2em;
+
+            margin: 0 auto;
+        }
+
+        .english_char {
+            display: inline;
+            height: 60px;
+            width: 60px;
+            line-height: 60px;
+
+            background-color: #565cb4;
+            color: white;
+            text-align: center;
+            font-size: 2em;
+
+            margin: 0 auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 123px);
+            /*grid-auto-flow: column;*/
+            gap: 10px;
+        }
+
+        .gridception {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 3px;
+            background-color: #565cb4;
+        }
+
+        #second_container {
+            grid-template-columns: repeat(auto-fill, 60px);
+            padding-bottom: 10px
+        }
+    </style>
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.innerHTML);
+            ev.dataTransfer.setData("text/html", ev.target.id);
+            ev.dataTransfer.setData("formatText", ev.target.className);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+
+            //data transfer stuff
+            var origin_inner = ev.dataTransfer.getData("text");
+            var origin_id = ev.dataTransfer.getData("text/html");
+            var origin_class = ev.dataTransfer.getData("formatText")
+
+            //make sure they're dropping in a legal area, otherwise, send the character back to origin
+            if (ev.target.className != origin_class || ev.target.id == origin_id)
+                return;
+
+
+            document.getElementById(origin_id).innerHTML = ev.target.innerHTML;
+            ev.target.innerHTML = origin_inner;
+
+            wrong_answers = color_response();
+
+            console.log("wrong, " + wrong_answers);
+
+            //if they've matched all the chars
+            if (wrong_answers == 0) {
+                console.log("hey");
+                sc = document.getElementById('second_container');
+                sc.insertAdjacentHTML('beforeend', "<h2 class='u-text u-text-default u-text-1' style='margin: 0 auto; padding-top: 20px;'>Congratulations!</h2>");
+            }
+        }
+
+        function color_response() {
+            //set circle colors to red if wrong place, green if right place, and grey if neutral place
+            var russian_chars = document.getElementsByClassName("russian_char");
+            red_grey_counter = 0
+            for (var i = 0; i < russian_chars.length; i++) {
+                current = russian_chars.item(i);
+                if (current.id == current.innerHTML)
+                    current.style.backgroundColor = "#56B48C";
+                else if (current.innerHTML == "" && isNaN(current.id)) {
+                    current.style.backgroundColor = "grey";
+                    red_grey_counter += 1;
+                }
+                else if (isNaN(current.id)) {
+                    current.style.backgroundColor = "red";
+                    red_grey_counter += 1;
+                }
+
+                if (!isNaN(current.id) && current.innerHTML == "") {
+                    current.remove();
+                }
+            }
+            return red_grey_counter;
+        }
+    </script>
+    <script>
+        function generate_chars() {
+            var russian_chars = ["Аа", "Бб", "Вв", "Гг", "Дд", "Ее", "Ёё", "Жж", "Зз", "Ии", "Йй", "Кк", "Лл", "Мм", "Нн", "Оо", "Пп", "Рр", "Сс", "Тт", "Уу", "Фф", "Хх", "Цц", "Чч", "Шш", "Щщ", "Ъъ", "Ыы", "Ьь", "Ээ", "Юю", "Яя"]
+            var english_equivalents = ["A", "B", "V", "G", "D", "Ye", "Yo", "Zh", "Z", "I", "Y", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "Kh", "Ts", "Ch", "Sh", "Sch", "-", "Iy", "soft", "E", "Yu", "Ya"]
+            first_container = document.getElementById("first_container");
+            second_container = document.getElementById("second_container");
+
+            for (var i = 0; i < russian_chars.length; i++) {
+                first_container.insertAdjacentHTML('beforeend', "<div class='gridception'><div id='" + russian_chars[i] + "' class='russian_char' draggable='true' ondragstart='drag(event)' ondrop='drop(event)' ondragover='allowDrop(event)'></div><div class='english_char'>" + english_equivalents[i] + "</div></div>");
+            }
+            a_number = russian_chars.length;
+            for (var i = 0; i < a_number; i++) {
+                random_num = Math.floor(Math.random() * (russian_chars.length - 0) + 0);
+                second_container.insertAdjacentHTML('beforeend', "<div id='" + i + "' class='russian_char' draggable='true' ondragstart='drag(event)' ondrop='drop(event)'ondragover='allowDrop(event)'>" + russian_chars[random_num] + "</div>");
+                russian_chars.splice(random_num, 1);
+            }
+        }
+    </script>
+</head>
+
+<body class="u-body" onload="generate_chars()">
+    <section class="u-align-center u-clearfix u-section-2" id="sec-aa59">
+        <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-xl u-sheet-1">
+            <h2 class="u-text u-text-default u-text-1" style="margin: 0 auto; padding-top: 20px;">Drag-and-Drop</h2>
+            <p class="u-align-center u-text u-text-default"
+                style="margin: 0 auto; padding-top: 10px; padding-bottom: 30px;">Drag the Russian characters to their
+                corresponding <span style="color:#565cb4">English</span> sounds. <span
+                    style="color:#56B48C">Green</span> means it's in the right place, and <span
+                    style="color:red">red</span> means it's in the wrong place.</p>
+            <div class="grid-container" id="first_container">
+
+            </div>
+            <hr style="width: 100%;">
+            <div class="grid-container" id="second_container">
+
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
